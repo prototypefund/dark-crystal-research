@@ -5,6 +5,10 @@
 - [UX Report from UnderExposed Design Residency with Ura Design - Part 1](./underexposed1.md)
 - [UX Report from UnderExposed Design Residency with Ura Design - Part 2](./underexposed2.md)
 
+## Papers
+
+- [Evaluating Social Schemes for Recovering Control of an identifier](./evaluating-social-recovery.pdf) - a rubrik to help decide which social recovery scheme is appropriate for a particular system
+
 ## Scenarios and design
 
 - [Original Coconut death experiment](./original_coconut.md)

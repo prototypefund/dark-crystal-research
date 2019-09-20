@@ -65,6 +65,7 @@ A major disadvantage is that unlike secret sharing schemes like Shamirs, this re
 
 - Verification vectors are, in cryptographic terms, the public keys of the secret key contributions (which are individual secret keys).  So they are also 64 bytes.
 - member "id"s are, in cryptographic terms, individual secret keys. But they are not used how we traditionally use secrets keys, and in order to understand what it going on it makes more sense to call them identifiers.  They are used in deriving a key share for a particular individual.  But their role in that process is to identify the individual.
+- For inspiration, [Beacon](https://github.com/Elvenisboy/Beacon) is a project which uses this (although with very little documentation).
 
 ## References and links
 

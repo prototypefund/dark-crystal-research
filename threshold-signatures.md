@@ -53,7 +53,7 @@ A major disadvantage is that unlike secret sharing schemes like Shamirs, this re
 
 ### Dfinity's [js-bls-lib](https://github.com/dfinity/js-bls-lib) library
 
-- Uses [this version](https://github.com/herumi/bls/tree/8c7256c6becf7b3e3249cd280c3ec00bf464c2d1) of [herumi/bls](https://github.com/herumi/bls) by Mitsunari Shigeo, written in C++.
+- Bindings to [this version](https://github.com/herumi/bls/tree/8c7256c6becf7b3e3249cd280c3ec00bf464c2d1) of [herumi/bls](https://github.com/herumi/bls) by Mitsunari Shigeo, written in C++.
 - Barreto Naehrig Curve FP254BNB - Aranha et al.  https://tools.ietf.org/id/draft-kasamatsu-bncurves-01.html
 - Supports BLS12-381: https://electriccoin.co/blog/new-snark-curve/ https://crypto.stackexchange.com/questions/62183/understanding-bls12-381-curve
 - Secret keys are 32 bytes, public keys are 64 bytes
@@ -61,7 +61,7 @@ A major disadvantage is that unlike secret sharing schemes like Shamirs, this re
 - Secure memory allocation and removal is provided
 - Secret keys can be generated randomly or deterministically from a given seed
 
-### [Dfinity's Distributed Key Generation module](https://github.com/dfinity/dkg) 
+### Dfinity's Distributed Key Generation module [dfinity/dkg](https://github.com/dfinity/dkg) 
 
 - Verification vectors are, in cryptographic terms, the public keys of the secret key contributions (which are individual secret keys).  So they are also 64 bytes.
 - member "id"s are, in cryptographic terms, individual secret keys. But they are not used how we traditionally use secrets keys, and in order to understand what it going on it makes more sense to call them identifiers.  They are used in deriving a key share for a particular individual.  But their role in that process is to identify the individual.

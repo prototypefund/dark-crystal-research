@@ -67,6 +67,13 @@ A major disadvantage is that unlike secret sharing schemes like Shamirs, this re
 - member "id"s are, in cryptographic terms, individual secret keys. But they are not used how we traditionally use secrets keys, and in order to understand what it going on it makes more sense to call them identifiers.  They are used in deriving a key share for a particular individual.  But their role in that process is to identify the individual.
 - For inspiration, [Beacon](https://github.com/Elvenisboy/Beacon) is a project which uses this (although with very little documentation).
 
+## Other javascript implementations
+
+- https://github.com/PolkaJS/thresh-sig - has some interesting (but old) academic papers linked
+- https://github.com/antouhou/bls-signatures
+- https://github.com/wa1one/bls-sign
+- https://www.npmjs.com/package/noble-bls12-381
+
 ## References and links
 
 - [Boneh, Lynn & Shacham 'Short Signatures from the Weil Pairing' - Journal of Cryptology, Sept 2004 Vol 17 Issue 4 p297-319](https://link.springer.com/article/10.1007%2Fs00145-004-0314-9)

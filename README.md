@@ -4,6 +4,7 @@
 - [Dark Crystal - Report on Peer Testing and Usability Assessment](./dark_crystal-report_peer_testing_and_usability_assessment.md)
 - [UX Report from UnderExposed Design Residency with Ura Design - Part 1](./underexposed1.md)
 - [UX Report from UnderExposed Design Residency with Ura Design - Part 2](./underexposed2.md)
+- [Key re-issuance using Threshold Group signatures](./threshold-signatures.md) (WIP)
 
 ## Papers
 

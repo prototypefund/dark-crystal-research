@@ -33,7 +33,7 @@ Although MuSig was developed for use in the context of cryptocurrencies, it has 
 
 ### Application for social recovery
 
-Threshold signatures could be used for identifier or account recovery as follows:
+Threshold signatures could be used for identifier or account recovery.  Note that this is not the same as key recovery.  The original key is never recovered. Rather, this is a system for establishing a new key, such that we can gain consensus that the old key and the new key belong to the same identity
 
 - The identifier holder, Alice, initially publishes a signed message announcing the aggregated public key of the group who are empowered to make assertions on her behalf.  We will call it her support group. She also decides on a threshold number, *n*, the number of members required to make those assertions.
 

@@ -27,9 +27,11 @@ Paul Feldman proposed a scheme in 1987 which allows custodians to verify their o
 
 #### Pederson's scheme
 
+Pederson's scheme, published in 1992, has the advantage that it can be used with secrets which are not uniformly random. For example, a password, or message in a human language. 
+
 #### Schoenmakers scheme
 
-More recently Berry Schoenmaker proposed a scheme which is publicly verifiable (originally introduced by Stadler, 1996).  That is, not only custodians, but anybody is able to verify that the correct shares were given.  The scheme is described in the context of an electronic voting application and focusses on validating the behaviour of the 'dealer' (the author of the secret).  But it can just as well be used to verify that returned shares have not been modified. 
+More recently Berry Schoenmaker proposed a scheme which is designed to be publicly verifiable (originally introduced by Stadler, 1996).  That is, not only custodians, but anybody is able to verify that the correct shares were given.  The scheme is described in the context of an electronic voting application and focusses on validating the behaviour of the 'dealer' (the author of the secret).  But it can just as well be used to verify that returned shares have not been modified. 
 
 #### Publicly publishing the encrypted shares  
 
@@ -37,7 +39,7 @@ The problem with this, is it only helps in this context if the encryption scheme
 
 #### Publicly publishing the hash of each share
 
-This is also something we considered, but feel that it gives custodians more unnecessary extra information and less accountability compared to other methods.
+This is also something we considered, but feel that it gives custodians more unnecessary extra information, which gives security implications, and less accountability compared to other methods.
 
 #### Signing shares
 
@@ -83,6 +85,7 @@ There are a variety of good options for addressing the security issues posed by 
 - Blakley, G.R. (1979). "Safeguarding Cryptographic Keys". Managing Requirements Knowledge, International Workshop on (AFIPS). 48: 313–317. doi:10.1109-/AFIPS.1979.98.
 - Feldman, Paul (1987) "A practical scheme for non-interactive Verifiable Secret Sharing" Proceedings of the 28th Annual Symposium on Foundations of Computer Science
 - Harn, L. & Lin, C. Detection and identification of cheaters in (t, n) secret sharing scheme, Des. Codes Cryptogr. (2009) 52: 15. https://link.springer.com/article/10.1007/s10623-008-9265-8
+- Pedersen T.P. (1992) [Non-Interactive and Information-Theoretic Secure Verifiable Secret Sharing.](https://link.springer.com/chapter/10.1007%2F3-540-46766-1_9) In: Feigenbaum J. (eds) Advances in Cryptology — CRYPTO ’91. CRYPTO 1991. Lecture Notes in Computer Science, vol 576. Springer, Berlin, Heidelberg 
 - Schneier, Bruce (2010) - DNSSEC Root Key held by 7 parties worldwide https://www.schneier.com/blog/archives/2010/07/dnssec_root_key.html
 - Schoenmakers, Berry (1999) "A Simple Publicly Verifiable Secret Sharing Scheme and its Application to Electronic Voting" Advances in Cryptology-CRYPTO'99, volume 1666 of Lecture Notes in Computer Science, pages 148-164, Berlin, 1999. Springer-Verlag. 
 - Shamir, Adi (1979). "How to share a secret". Communications of the ACM. 22 (11): 612–613. doi:10.1145/359168.359176.

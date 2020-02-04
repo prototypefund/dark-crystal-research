@@ -11,9 +11,9 @@ However, it is not without its problems:
 
 Harn and Lin consider the situation in which 'cheaters' claiming to be holders of shares introduce 'fake' shares, causing the incorrect secret to be recovered.  Of course without having the other shares they have no control over the content of the 'incorrect' secret. 
 
-This is not so much of a concern for us as we already have a way to validate who is a custodian.  However we also considered the possibility that genuine holders of shares might have a motivation for not wanting the secret to be recovered, and could maliciously modify their share.  Furthermore, the shares might be modified by some accidental or external cause, and it is important to be able to determine which share is causing the problem.
+This is not so much of a concern for dark-crystal as we generally already have a way to validate who is a custodian, as we keep track of who shares were sent out to.  However we also considered the possibility that genuine holders of shares might have a motivation for not wanting the secret to be recovered, and could maliciously modify their share.  Furthermore, the shares might be modified by some accidental or external cause, and it is important to be able to determine which share is causing the problem.
 
-It might be very easy to determine that we have recovered the wrong secret.  Either because we have some idea of how we expect it to look, or as we have recently implemented in dark crystal, an identifier is added to the secret to allow the correct secret to be automatically recognised.  (We concatonate the secret with the last 16 bytes of its SHA256 hash). 
+It might be very easy to determine that we have recovered the wrong secret.  Either because we have some idea of how we expect it to look, or as we have implemented in dark crystal, by using a message authentication code (MAC).
 
 However, the problem here is that although we might know for sure that we have not successfully restored our secret, we have no way of telling which share(s) have caused the problem, meaning we do not know who is responsible. 
 
@@ -21,35 +21,41 @@ The solution is to introduce some verification of shares, and a number of differ
 
 Here are some possible solutions:
 
+#### Feldman's scheme 
+
+Paul Feldman proposed a scheme in 1987 which allows custodians to verify their own shares, using homomorphic encryption (an encryption scheme where computation can be done on encrypted data which when decrypted gives the same result as doing that computation on the original data) on top of Shamir's original scheme.
+
+#### Pederson's scheme
+
+#### Schoenmakers scheme
+
+More recently Berry Schoenmaker proposed a scheme which is publicly verifiable (originally introduced by Stadler, 1996).  That is, not only custodians, but anybody is able to verify that the correct shares were given.  The scheme is described in the context of an electronic voting application and focusses on validating the behaviour of the 'dealer' (the author of the secret).  But it can just as well be used to verify that returned shares have not been modified. 
+
 #### Publicly publishing the encrypted shares  
 
-This is what we were originally planning to do, but this only helps in this context if the encryption scheme used is deterministic.  That is to say encrypting the same message with the same key twice will reliably give the same output.  The problem here is that such encryption schemes are vulnerable to replay attacks.  Most modern asymmetric schemes introduce some random nonce to evade this problem. The scheme we are using (libsodium's secret box) typically takes a 24 byte random nonce.  So this is not a good option.  However we actually already 'wrap' shares in a second level of encryption to to allow the secret owner to publish their own encrypted copy of the share message with its associated metadata as a way to keep a personal record of what was sent to who. When we looked at other schemes for verifiable secret sharing we found they involved a similar practice, and we decided to use an existing well-documented scheme. 
+The problem with this, is it only helps in this context if the encryption scheme used is deterministic.  That is to say encrypting the same message with the same key twice will reliably give the same output.  The problem here is that such encryption schemes are vulnerable to replay attacks.  Most modern symmetric schemes introduce some random nonce to evade this problem. The scheme we are using (libsodium's secret box) typically takes a 24 byte random nonce.  So this is not a good option.
 
 #### Publicly publishing the hash of each share
 
 This is also something we considered, but feel that it gives custodians more unnecessary extra information and less accountability compared to other methods.
 
-#### Feldman's scheme 
+#### Signing shares
 
-Paul Feldman proposed a scheme in 1987 which allows custodians to verify their own shares, using homomorphic encryption (an encryption scheme where computation can be done on encrypted data which when decrypted gives the same result as doing that computation on the original data) on top of Shamir's original scheme.
+In dark-crystal's key backup and recovery, we have the advantage that we have a notion of identity of the secret owner and the custodians, since we use cryptographic signing and asymmetric encryption to validate who sent a message and to control to whom messages are sent. Since the secret owner has an established public key, and all messages are signed, they can sign individual shards, and this signature stays with the shard data until the point of recovery.  This means that, provided we know the public key of the secret owner, we can be sure that a given share has not been tampered with, or accidentally modified.
 
-#### Schoenmakers scheme
+#### Implementations of publicly verifiable secret sharing
 
-More recently Berry Schoenmaker proposed a scheme which is publicly verifiable (originally introduced by Stadler, 1996).  That is, not only custodians, but anybody is able to verify that the correct shares were given.  The scheme is described in the context of an electronic voting application and focusses on validating the behaviour of the 'dealer' (the author of the secret).  But it can just as well be used to verify that returned shares have not been modified, which is what we are most interested in. 
+If you are looking for a publicly verifiable secret sharing implementation:
 
-#### Implementations
+- [songgeng87/PubliclyVerifiableSecretSharing](https://github.com/songgeng87/PubliclyVerifiableSecretSharing) - C implementation built on secp256k1 used by EOS
+- [FabioTacke/PubliclyVerifiableSecretSharing](https://github.com/FabioTacke/PubliclyVerifiableSecretSharing) - A Swift implementation 
+- [dfinity/vss](https://github.com/dfinity/vss) - Dfinity's NodeJS implementation built on BLS, and used for their distributed key generation
 
-We are currently considering the following implementations:
-
-- https://github.com/songgeng87/PubliclyVerifiableSecretSharing - C implementation built on secp256k1 used by EOS
-- https://github.com/FabioTacke/PubliclyVerifiableSecretSharing - A Swift implementation 
-- https://github.com/dfinity/vss - Dfinity's NodeJS implementation built on BLS, and used for their distributed key generation
-
-However, these do not give a drop-in replacement for the secrets library we currently use.  Adopting verifiable secret sharing would require a large change to our codebase and mean we need to reconsider several aspects of our model.  But it would bring a great advantage in terms of security.
+However, these do not give a drop-in replacement for the secrets library used in dark-crystal key backup. 
 
 ### Share size has a linear relationship with secret size
 
-Anyone holding a share is able to determine the length of the secret.  Particular kind of cryptographic keys have a characteristic length.  So the scheme gives away more information to custodians than is necessary.  Our solution to this is to add padding to the secret to increase share length to a standard amount.
+Anyone holding a share is able to determine the length of the secret.  Particular kind of cryptographic keys have a characteristic length.  So the scheme gives away more information to custodians than is necessary.  A solution to this is to add padding to the secret to increase share length to a standard amount.
 
 ### Revoking shares if trust in a custodian is lost
 
@@ -59,15 +65,17 @@ In Shamir's original paper he states that one of the great advantages of the sch
 
 This means in a conventional secret sharing scenario (imagine the shares are written on paper and given to the custodians), we could simply give new shares to the custodians we do still trust and ask them to destroy the old ones. This would make the share belonging to the untrusted person become useless.
 
-In our case, we are using Secure-Scuttlebutt's immutable log, and have no way of destroying a message. A solution we are considering, is to use ephemeral keys which are used only one time for a particular share and can be deleted when a new set of shares is issued. This gives greatly increased security, but the cost is more keys to manage and increased complexity of the model. 
+However, depending on the transmissionHowever, depending on the transmission system used it might not be so simple to destroy the message. This is particularly an issue for peer-to-peer systems which use immutable logs. One solution to this is to use ephemeral keys which are used only a single time for a particular share and can be deleted when a new set of shares is issued. This gives greatly increased security, but the cost is more keys to manage and increased complexity of the model. 
 
-### Secure computation
+### Trusted execution environments
 
-Having a good system of encryption does not give us security if the host system is compromised. We are considering using a dedicated virtual machine for secure computation, such as Dyne.org's [Zenroom](https://zenroom.dyne.org). However there, are many more considerations one needs to make, especially if secret is initially stored on disk.  But this goes beyond the scope of assessing the security of Shamir's scheme. 
+Having a good system of encryption does not give us security if the host system is compromised. Many options exist for which provide a secure execution environment to address this issue, for example Dyne.org's [Zenroom](https://zenroom.dyne.org).
+
+However, if we are to assume the host system is insecure, there are many more considerations one needs to make, especially if secret is initially stored on disk. This goes beyond the scope of assessing the security of Shamir's scheme. 
 
 ## Conclusion
 
-We feel confident that we are able to address the issues we have explored in this article, although not all of them will be implemented in the next release. However, we have focussed here mainly on technical limitations of the scheme.  There are many other social aspects which pose threats to our model, which we will explore in another article. 
+There are a variety of good options for addressing the security issues posed by Shamir's scheme. However, we have focussed here mainly on technical limitations of the scheme.  There are many other social aspects which pose threats to our model, which we will explore in another article. 
 
 ## References
 
@@ -82,7 +90,6 @@ We feel confident that we are able to address the issues we have explored in thi
 
 ## See Also...
 
-- Our [list of applications and articles on Shamir's secret sharing](https://github.com/blockades/mmt_resources/blob/master/research/shamirs_secret_sharing_applications.md)
-- [Brainstorming Coconut-related scenarios](https://github.com/blockades/mmt_resources/blob/master/research/coconut_brainstorm.md) ('Coconut death' refers to a role playing game we did as part of our research where we tried to recover the keys of members of the group who had been hit by coconuts)
-- [Thoughts on verifying received shards in dark crystal](https://github.com/blockades/mmt_resources/blob/master/research/verifying_recived_shards.md)
-- You can also follow our development on [Secure Scuttlebutt](https://www.scuttlebutt.nz/) channels #darkcrystal #dark-crystal and #mmt
+- Our [list of applications and articles on Shamir's secret sharing](https://gitlab.com/dark-crystal/research/-/blob/master/shamirs_secret_sharing_applications.md)
+- [Brainstorming Coconut-related scenarios](https://gitlab.com/dark-crystal/research/-/blob/master/coconut_brainstorm.md) ('Coconut death' refers to a role playing game we did as part of our research where we tried to recover the keys of members of the group who had been hit by coconuts)
+- [Thoughts on verifying received shards in dark crystal](https://gitlab.com/dark-crystal/research/-/blob/master/verifying_recived_shards.md)
